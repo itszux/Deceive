@@ -159,7 +159,8 @@ internal class ProxiedConnection
                     presence.Remove();
                 }
 
-                if (targetStatus != "chat" || presence.Element("games")?.Element("league_of_legends")?.Element("st")?.Value != "dnd")
+                if (targetStatus != "chat" ||
+                    presence.Element("games")?.Element("league_of_legends")?.Element("st")?.Value != "dnd")
                 {
                     presence.Element("show")?.ReplaceNodes(targetStatus);
                     presence.Element("games")?.Element("league_of_legends")?.Element("st")?.ReplaceNodes(targetStatus);
@@ -181,7 +182,7 @@ internal class ProxiedConnection
 
                 // Remove Legends of Runeterra presence
                 presence.Element("games")?.Element("bacon")?.Remove();
-                
+
                 // Remove 2XKO presence
                 presence.Element("games")?.Element("lion")?.Remove();
 
@@ -198,7 +199,7 @@ internal class ProxiedConnection
                 if (ValorantVersion is null)
                 {
                     var valorantBase64 = presence.Element("games")?.Element("valorant")?.Element("p")?.Value;
-                    if (valorantBase64 is not null)
+                    if (!string.IsNullOrWhiteSpace(valorantBase64))
                     {
                         var valorantPresence = Encoding.UTF8.GetString(Convert.FromBase64String(valorantBase64));
                         var valorantJson = JsonSerializer.Deserialize<JsonNode>(valorantPresence);
@@ -215,7 +216,11 @@ internal class ProxiedConnection
             }
 
             var sb = new StringBuilder();
-            var xws = new XmlWriterSettings { OmitXmlDeclaration = true, Encoding = Encoding.UTF8, ConformanceLevel = ConformanceLevel.Fragment, Async = true };
+            var xws = new XmlWriterSettings
+            {
+                OmitXmlDeclaration = true, Encoding = Encoding.UTF8, ConformanceLevel = ConformanceLevel.Fragment,
+                Async = true
+            };
             using (var xw = XmlWriter.Create(sb, xws))
             {
                 foreach (var xElement in xml.Root.Elements())
@@ -238,7 +243,72 @@ internal class ProxiedConnection
         SentFakePlayerPresence = true;
         // VALORANT requires a recent version to not display "Version Mismatch"
         var valorantPresence = Convert.ToBase64String(
-            Encoding.UTF8.GetBytes($"{{\"isValid\":true,\"partyId\":\"00000000-0000-0000-0000-000000000000\",\"partyClientVersion\":\"{ValorantVersion ?? "unknown"}\",\"accountLevel\":1000}}")
+            Encoding.UTF8.GetBytes("""
+                                              {
+                                               "isValid": true,
+                                               "isIdle": false,
+                                               "queueId": "competitive",
+                                               "provisioningFlow": "Invalid",
+                                               "partyId": "00000000-0000-0000-0000-000000000000",
+                                               "partySize": 1,
+                                               "maxPartySize": 5,
+                                               "partyOwnerMatchScoreAllyTeam": 0,
+                                               "partyOwnerMatchScoreEnemyTeam": 0,
+                                               "premierPresenceData":
+                                               {
+                                                   "rosterId": "",
+                                                   "rosterName": "Deceive is active. Ignore any version mismatch warnings.",
+                                                   "rosterTag": "Deceive Active!",
+                                                   "rosterType": "VCT",
+                                                   "division": 0,
+                                                   "score": 0,
+                                                   "plating": 0,
+                                                   "showAura": false,
+                                                   "showTag": true,
+                                                   "showPlating": false
+                                               },
+                                               "matchPresenceData":
+                                               {
+                                                   "sessionLoopState": "MENUS",
+                                                   "provisioningFlow": "Invalid",
+                                                   "matchMap": "",
+                                                   "queueId": "competitive"
+                                               },
+                                               "partyPresenceData":
+                                               {
+                                                   "partyId": "00000000-0000-0000-0000-000000000000",
+                                                   "isPartyOwner": true,
+                                                   "partyState": "DEFAULT",
+                                                   "partyAccessibility": "CLOSED",
+                                                   "partyLFM": false,
+                                                   "partyClientVersion": "{VERSION}",
+                                                   "partyVersion": 1768830115681,
+                                                   "partySize": 1,
+                                                   "queueEntryTime": "0001.01.01-00.00.00",
+                                                   "isPartyCrossPlayEnabled": false,
+                                                   "isPlayerCrossPlayEnabled": false,
+                                                   "partyPrecisePlatformTypes": 1,
+                                                   "customGameName": "Deceive Active!",
+                                                   "customGameTeam": "",
+                                                   "maxPartySize": 5,
+                                                   "tournamentId": "",
+                                                   "rosterId": "",
+                                                   "partyOwnerSessionLoopState": "MENUS",
+                                                   "partyOwnerMatchMap": "",
+                                                   "partyOwnerProvisioningFlow": "Invalid",
+                                                   "partyOwnerMatchScoreAllyTeam": 0,
+                                                   "partyOwnerMatchScoreEnemyTeam": 0
+                                               },
+                                               "playerPresenceData":
+                                               {
+                                                   "playerCardId": "893deca1-4123-9c1f-2985-aa9de74cb512",
+                                                   "playerTitleId": "e3ca05a4-4e44-9afe-3791-7d96ca8f71fa",
+                                                   "accountLevel": 999,
+                                                   "competitiveTier": 0,
+                                                   "leaderboardPosition": 0
+                                               }
+                                              }
+                                   """.Replace("{VERSION}", ValorantVersion ?? "unknown"))
         );
 
         var randomStanzaId = Guid.NewGuid();
