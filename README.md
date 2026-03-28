@@ -2,6 +2,9 @@
 
 [![Discord](https://discordapp.com/api/guilds/249481856687407104/widget.png?style=shield)](https://discord.gg/bfxdsRC)
 
+> [!CAUTION]
+> The `deceive.gg` website is **UNRELATED** to this project and does not represent this project. Downloading anything from that site is **NOT SAFE**. If you are subscribing to their fake Patreon, you are **BEING SCAMMED**. I do not accept donations and do not run a Patreon project.
+
 # :tophat: Deceive
 
 Deceive allows you to appear offline in League of Legends, VALORANT and Legends of Runeterra without any loss of functionality! Talk to your friends, communicate in champion select and queue up together, all while sneakily appearing offline to all your friends.
