@@ -30,6 +30,9 @@ You can also launch Deceive with `lol`, `lor`, or `valorant` as command-line arg
 **Is this approved by Riot?**  
 Riot has confirmed that [you won't get banned](https://i.thijsmolendijk.nl/deceive_ok.png) for using Deceive. It may break at any time though.
 
+**Deceive is telling me to change my DNS server. Why is that?**  
+Deceive works by sitting between the Riot Client and the chat servers. To do that, it needs to intercept traffic, which involves giving the client a different address to connect to. We use `deceive-localhost.molenzwiebel.xyz`, which normally resolves to your local computer. For some network setups/ISPs/school/work networks, this domain does not resolve. If you are on such a network, you'll need to either change your DNS to something like [Cloudflare's 1.1.1.1](https://developers.cloudflare.com/1.1.1.1/setup/windows/) or [Google's 8.8.8.8](https://developers.google.com/speed/public-dns/docs/using), or [manually add](https://kb.parallels.com/en/129398) the entry `127.0.0.1 deceive-localhost.molenzwiebel.xyz` to your `hosts` file. Deceive will offer to do this second option automatically when it detects that the domain does not resolve. Note that for both of these options you will need Administrator access on your PC.
+
 **I'm more of a visual learner. Do you have a video?**  
 Sure thing! Just click the preview below:  
 [![Youtube Preview](http://img.youtube.com/vi/bfsbtd39GqE/maxresdefault.jpg)](https://youtu.be/bfsbtd39GqE)

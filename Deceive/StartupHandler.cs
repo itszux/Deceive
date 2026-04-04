@@ -17,12 +17,29 @@ internal static class StartupHandler
     /// <param name="gamePatchline">The patchline to be used for launching the game.</param>
     /// <param name="riotClientParams">Any extra parameters to be passed to the Riot Client.</param>
     /// <param name="gameParams">Any extra parameters to be passed to the launched game.</param>
+    /// <param name="updateHosts">If set, update the hosts file to add the localhsot mapping, then exit. Requires admin.</param>
     [STAThread]
-    public static async Task Main(LaunchGame args = LaunchGame.Auto, string gamePatchline = "live", string? riotClientParams = null, string? gameParams = null)
+    public static async Task Main(LaunchGame args = LaunchGame.Auto, string gamePatchline = "live", string? riotClientParams = null, string? gameParams = null, bool? updateHosts = null)
     {
         AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         Application.EnableVisualStyles();
         Trace.Listeners.Add(new ConsoleTraceListener());
+        
+        Trace.WriteLine($"{DeceiveTitle} starting with arguments:\n" +
+                        $"LaunchGame: {args}\n" +
+                        $"GamePatchline: {gamePatchline}\n" +
+                        $"RiotClientParams: {riotClientParams}\n" +
+                        $"GameParams: {gameParams}\n" +
+                        $"UpdateHosts: {updateHosts}");
+        
+        if (updateHosts == true)
+        {
+            // running elevated specifically to update hosts file, so do that and exit immediately
+            using var w = File.AppendText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "drivers/etc/hosts"));
+            await w.WriteLineAsync("\r\n# Localhost mapping used by Deceive\r\n127.0.0.1 " + ConfigProxy.LocalhostDomain);
+            return;
+        }
+
         try
         {
             await StartDeceiveAsync(args, gamePatchline, riotClientParams, gameParams);
@@ -75,6 +92,9 @@ internal static class StartupHandler
         {
             // ignored; just don't save logs if file is already being accessed
         }
+
+        // if we can't resolve deceive-localhost.molenzwiebel.xyz to 127.0.0.1, boom
+        Utils.EnsureLocalhostResolution();
 
         // Step 0: Check for updates in the background.
         _ = Utils.CheckForUpdatesAsync();

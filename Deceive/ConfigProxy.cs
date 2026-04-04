@@ -18,6 +18,7 @@ internal class ConfigProxy
 {
     private const string ConfigUrl = "https://clientconfig.rpg.riotgames.com";
     private const string GeoPasUrl = "https://riot-geo.pas.si.riotgames.com/pas/v1/service/chat";
+    public const string LocalhostDomain = "deceive-localhost.molenzwiebel.xyz";
 
     /**
      * Starts a new client configuration proxy at a random port. The proxy will modify any responses
@@ -116,7 +117,7 @@ internal class ConfigProxy
             {
                 // Save fallback host
                 riotChatHost = configObject["chat.host"]!.GetValue<string>();
-                configObject["chat.host"] = "deceive-localhost.molenzwiebel.xyz";
+                configObject["chat.host"] = LocalhostDomain;
             }
 
             // Set chat port.
@@ -159,7 +160,7 @@ internal class ConfigProxy
                     }
                 }
 
-                affinities?.AsObject().Select(pair => pair.Key).ToList().ForEach(s => affinities[s] = "deceive-localhost.molenzwiebel.xyz");
+                affinities?.AsObject().Select(pair => pair.Key).ToList().ForEach(s => affinities[s] = LocalhostDomain);
             }
 
             modifiedContent = JsonSerializer.Serialize(configObject);
