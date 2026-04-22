@@ -66,6 +66,12 @@ internal class ProxiedConnection
                 }
                 else
                 {
+                    if (content.Contains("<presence"))
+                    {
+                        Trace.WriteLine("<!--RC TO SERVER ORIGINAL-->" + content);
+                        await PossiblyGrabValorantVersion(content);
+                    }
+                    
                     await Outgoing.WriteAsync(bytes, 0, byteCount);
                     Trace.WriteLine("<!--RC TO SERVER-->" + content);
                 }
@@ -135,11 +141,53 @@ internal class ProxiedConnection
         }
     }
 
+    private async Task PossiblyGrabValorantVersion(string content)
+    {
+        try
+        {
+            var wrappedContent = "<xml>" + content + "</xml>";
+            var xml = XDocument.Load(new StringReader(wrappedContent));
+
+            if (xml.Root is null)
+                return;
+            if (xml.Root.HasElements is false)
+                return;
+
+            foreach (var presence in xml.Root.Elements())
+            {
+                if (ValorantVersion is not null)
+                    break;
+                if (presence.Name != "presence")
+                    continue;
+                if (presence.Attribute("to") is not null)
+                    continue;
+
+                var valorantBase64 = presence.Element("games")?.Element("valorant")?.Element("p")?.Value;
+                if (string.IsNullOrWhiteSpace(valorantBase64))
+                    continue;
+
+                var valorantPresence = Encoding.UTF8.GetString(Convert.FromBase64String(valorantBase64));
+                var valorantJson = JsonSerializer.Deserialize<JsonNode>(valorantPresence);
+                ValorantVersion = valorantJson?["partyPresenceData"]?["partyClientVersion"]?.GetValue<string>();
+                Trace.WriteLine("Found VALORANT version: " + ValorantVersion);
+                if (InsertedFakePlayer && ValorantVersion is not null)
+                    await SendFakePlayerPresenceAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            Trace.WriteLine(e);
+            Trace.WriteLine("Error grabbing VALORANT version.");
+        }
+    }
+
     private async Task PossiblyRewriteAndResendPresenceAsync(string content, string targetStatus)
     {
         try
         {
             LastPresence = content;
+            await PossiblyGrabValorantVersion(content);
+
             var wrappedContent = "<xml>" + content + "</xml>";
             var xml = XDocument.Load(new StringReader(wrappedContent));
 
@@ -189,27 +237,6 @@ internal class ProxiedConnection
                 // Remove Riot Client presence
                 presence.Element("games")?.Element("keystone")?.Remove();
                 presence.Element("games")?.Element("riot_client")?.Remove();
-
-                // Extracts current VALORANT from the user's own presence, so that we can show a fake
-                // player with the proper version and avoid "Version Mismatch" from being shown.
-                //
-                // This isn't technically necessary, but people keep coming in and asking whether
-                // the scary red text means Deceive doesn't work, so might as well do this and
-                // get a slightly better user experience.
-                if (ValorantVersion is null)
-                {
-                    var valorantBase64 = presence.Element("games")?.Element("valorant")?.Element("p")?.Value;
-                    if (!string.IsNullOrWhiteSpace(valorantBase64))
-                    {
-                        var valorantPresence = Encoding.UTF8.GetString(Convert.FromBase64String(valorantBase64));
-                        var valorantJson = JsonSerializer.Deserialize<JsonNode>(valorantPresence);
-                        ValorantVersion = valorantJson?["partyPresenceData"]?["partyClientVersion"]?.GetValue<string>();
-                        Trace.WriteLine("Found VALORANT version: " + ValorantVersion);
-                        // only resend
-                        if (InsertedFakePlayer && ValorantVersion is not null)
-                            await SendFakePlayerPresenceAsync();
-                    }
-                }
 
                 // Remove VALORANT presence
                 presence.Element("games")?.Element("valorant")?.Remove();

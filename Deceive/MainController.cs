@@ -27,7 +27,14 @@ internal class MainController : ApplicationContext
         };
         TrayIcon.ShowBalloonTip(5000);
 
-        LoadStatus();
+        if (GamePromptForm.IsOnline)
+        {
+            Status = "chat";
+        }
+        else
+        {
+            LoadStatus();
+        }
         UpdateTray();
     }
 
@@ -212,6 +219,7 @@ internal class MainController : ApplicationContext
         });
 
         TrayIcon.ContextMenuStrip = new ContextMenuStrip();
+        TrayIcon.ContextMenuStrip.Renderer = new DarkModeRenderer();
 
 #if DEBUG
         var sendTestMsg = new ToolStripMenuItem("Send message", null, async (_, _) => { await SendMessageFromFakePlayerAsync("Test"); });

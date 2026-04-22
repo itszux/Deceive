@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Deceive;
 
@@ -9,6 +10,7 @@ internal static class Persistence
 
     private static readonly string UpdateVersionPath = Path.Combine(DataDir, "updateVersionPrompted");
     private static readonly string DefaultLaunchGamePath = Path.Combine(DataDir, "launchGame");
+    private static readonly string AppPreferencesPath = Path.Combine(DataDir, "appPreferences");
 
     static Persistence()
     {
@@ -35,4 +37,30 @@ internal static class Persistence
     }
 
     internal static void SetDefaultLaunchGame(LaunchGame game) => File.WriteAllText(DefaultLaunchGamePath, game.ToString());
+
+    internal static void SetAppPreference<T>(string key, T value)
+    {
+        var preferences = GetAppPreferences();
+        preferences[key] = JsonConvert.SerializeObject(value);
+        File.WriteAllText(AppPreferencesPath, JsonConvert.SerializeObject(preferences));
+    }
+
+    internal static T? GetAppPreference<T>(string key)
+    {
+        var preferences = GetAppPreferences();
+        if (preferences.TryGetValue(key, out var value))
+        {
+            return JsonConvert.DeserializeObject<T?>(value);
+        }
+        return default(T);
+    }
+
+    private static System.Collections.Generic.Dictionary<string, string> GetAppPreferences()
+    {
+        if (!File.Exists(AppPreferencesPath))
+            return new System.Collections.Generic.Dictionary<string, string>();
+
+        var json = File.ReadAllText(AppPreferencesPath);
+        return JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string, string>>(json) ?? new System.Collections.Generic.Dictionary<string, string>();
+    }
 }
