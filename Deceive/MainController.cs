@@ -27,14 +27,7 @@ internal class MainController : ApplicationContext
         };
         TrayIcon.ShowBalloonTip(5000);
 
-        if (GamePromptForm.IsOnline)
-        {
-            Status = "chat";
-        }
-        else
-        {
-            LoadStatus();
-        }
+        LoadStatus();
         UpdateTray();
     }
 

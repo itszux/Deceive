@@ -1,4 +1,4 @@
-﻿namespace Deceive
+namespace Deceive
 {
     internal partial class GamePromptForm
     {
@@ -33,7 +33,8 @@
 			this.buttonLaunchValorant = new System.Windows.Forms.Button();
 			this.buttonLaunchRiotClient = new System.Windows.Forms.Button();
 			this.checkboxRemember = new System.Windows.Forms.CheckBox();
-			this.checkboxOnline = new System.Windows.Forms.CheckBox();
+			this.comboStatus = new System.Windows.Forms.ComboBox();
+			this.checkboxDefaultStatus = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// buttonLaunchLoL
@@ -90,25 +91,39 @@
 			this.checkboxRemember.Text = "Remember";
 			this.checkboxRemember.UseVisualStyleBackColor = true;
 			// 
-			// checkboxOnline
+			// comboStatus
 			// 
-			this.checkboxOnline.AutoSize = true;
-			this.checkboxOnline.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-			this.checkboxOnline.ForeColor = System.Drawing.Color.White;
-			this.checkboxOnline.Location = new System.Drawing.Point(124, 64);
-			this.checkboxOnline.Name = "checkboxOnline";
-			this.checkboxOnline.Size = new System.Drawing.Size(100, 21);
-			this.checkboxOnline.TabIndex = 6;
-			this.checkboxOnline.Text = "Start Online";
-			this.checkboxOnline.UseVisualStyleBackColor = true;
+			this.comboStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(48)))));
+			this.comboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboStatus.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.comboStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+			this.comboStatus.ForeColor = System.Drawing.Color.White;
+			this.comboStatus.FormattingEnabled = true;
+			this.comboStatus.Location = new System.Drawing.Point(109, 64);
+			this.comboStatus.Name = "comboStatus";
+			this.comboStatus.Size = new System.Drawing.Size(114, 25);
+			this.comboStatus.TabIndex = 6;
+			// 
+			// checkboxDefaultStatus
+			// 
+			this.checkboxDefaultStatus.AutoSize = true;
+			this.checkboxDefaultStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+			this.checkboxDefaultStatus.ForeColor = System.Drawing.Color.White;
+			this.checkboxDefaultStatus.Location = new System.Drawing.Point(234, 64);
+			this.checkboxDefaultStatus.Name = "checkboxDefaultStatus";
+			this.checkboxDefaultStatus.Size = new System.Drawing.Size(108, 21);
+			this.checkboxDefaultStatus.TabIndex = 7;
+			this.checkboxDefaultStatus.Text = "Make Default";
+			this.checkboxDefaultStatus.UseVisualStyleBackColor = true;
 			// 
 			// GamePromptForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(32)))), ((int)(((byte)(32)))));
-			this.ClientSize = new System.Drawing.Size(351, 88);
-			this.Controls.Add(this.checkboxOnline);
+			this.ClientSize = new System.Drawing.Size(351, 98);
+			this.Controls.Add(this.checkboxDefaultStatus);
+			this.Controls.Add(this.comboStatus);
 			this.Controls.Add(this.checkboxRemember);
 			this.Controls.Add(this.buttonLaunchRiotClient);
 			this.Controls.Add(this.buttonLaunchValorant);
@@ -130,6 +145,7 @@
         private System.Windows.Forms.Button buttonLaunchValorant;
         private System.Windows.Forms.Button buttonLaunchRiotClient;
         private System.Windows.Forms.CheckBox checkboxRemember;
-		private System.Windows.Forms.CheckBox checkboxOnline;
+		private System.Windows.Forms.ComboBox comboStatus;
+		private System.Windows.Forms.CheckBox checkboxDefaultStatus;
     }
 }
